@@ -11,17 +11,23 @@ const splats = [
   "both-rooms.spz",
   "front.spz",
   "back-yard.spz",
+  "jeeva.spz",
+  // "jeeva-2.spz",
 ];
 
 export default function App() {
-  const [selected, setSelected] = useState(splats[0]);
+  const [selected, setSelected] = useState(null);
   const [status, setStatus] = useState("loading");
 
   return (
     <div className="container">
       <div className="sidebar">
         <div className="splat-list">
-          <h1>Studio</h1>
+          <h1>
+            <button className="studio-button" onClick={() => setSelected(null)}>
+              Studio
+            </button>
+          </h1>
           {/* <h3>Available Scans</h3> */}
           {splats.map((splat) => (
             <button
@@ -59,24 +65,30 @@ export default function App() {
       </div>
 
       <div className="viewport">
-        {status === "loading" && <div className="loading">Loading…</div>}
-        {status === "error" && (
-          <div className="loading">Failed to load scan</div>
+        {selected === null ? (
+          <img className="studio-image" src="/wave.jpeg" alt="Wave" />
+        ) : (
+          <>
+            {status === "loading" && <div className="loading">Loading…</div>}
+            {status === "error" && (
+              <div className="loading">Failed to load scan</div>
+            )}
+            <Canvas
+              gl={{ antialias: false }}
+              camera={{ position: [0, 0, 5], fov: 60 }}
+            >
+              <SplatViewer url={`/spz/${selected}`} onStatus={setStatus} />
+              <OrbitControls
+                makeDefault
+                enableDamping
+                dampingFactor={0.05}
+                enableZoom={false}
+                rotateSpeed={-0.5}
+              />
+              <FlyControls speed={1} />
+            </Canvas>
+          </>
         )}
-        <Canvas
-          gl={{ antialias: false }}
-          camera={{ position: [0, 0, 5], fov: 60 }}
-        >
-          <SplatViewer url={`/spz/${selected}`} onStatus={setStatus} />
-          <OrbitControls
-            makeDefault
-            enableDamping
-            dampingFactor={0.05}
-            enableZoom={false}
-            rotateSpeed={-0.5}
-          />
-          <FlyControls speed={1} />
-        </Canvas>
       </div>
     </div>
   );
